@@ -8,13 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    protected $admin;
-
-    public function __construct()
-    {
-        $this->admin = Auth::guard('admin');
-    }
-
     public function authUser()
     {
         return response([
@@ -29,14 +22,14 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        if( !$this->admin->attempt( $request->only(['email','password']) ) ){
+        if( !Auth::attempt( $request->only(['email','password']) ) ){
             return response([
                 "message" => "Invalid credentials",
                 "data" => null
             ],401);
         }
 
-        $token = $this->admin->user()->createToken('token')->plainTextToken;
+        $token = Auth::user()->createToken('token')->plainTextToken;
 
         return response([
             "message" => "Request succeeded",

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Client;
 use App\Http\Traits\MediaTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +19,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $data = User::paginate(50);
+        $data = Client::paginate(50);
 
         return response([
             "message" => "Clients data retrieved successfully",
@@ -29,7 +29,7 @@ class ClientController extends Controller
 
     public function companies($id)
     {
-        $data = User::where('id',$id)->with('companies')->paginate(50);
+        $data = Client::where('id',$id)->with('companies')->paginate(50);
 
         return response([
             "message" => "Client companies data retrieved successfully",
@@ -62,15 +62,15 @@ class ClientController extends Controller
             ], 400);
         }
 
-        $user = new User();
-        $user->name     = $request->name;
-        $user->surname  = $request->surname;
-        $user->age      = $request->age;
-        $user->about    = $request->about;
-        $user->avatar   = $this->uploadImage($request->file('avatar'));
-        $user->email    = $request->email;
-        $user->password = $request->password;
-        $user->save();
+        $client = new Client();
+        $client->name     = $request->name;
+        $client->surname  = $request->surname;
+        $client->age      = $request->age;
+        $client->about    = $request->about;
+        $client->avatar   = $this->uploadImage($request->file('avatar'));
+        $client->email    = $request->email;
+        $client->password = $request->password;
+        $client->save();
 
         return response([
             "message" => "Client Store successfully",
@@ -86,14 +86,16 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        $user = User::where('id', $id)->with('companies')->first();
+        $client = Client::where('id', $id)->with('companies')->first();
 
-        if (!$user)
-            return response(["message"=>'Not found' , 'data' => null],404);
+        if (!$client)
+            return response([
+                "message"=>'Not found' , 'data' => null]
+                ,404);
 
         return response([
             "message" => "Client data retrieved successfully",
-            "data"    => $user
+            "data"    => $client
         ],200);
     }
 
@@ -106,8 +108,8 @@ class ClientController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::find($id);
-        if (!$user)
+        $client = Client::find($id);
+        if (!$client)
             return response([
                 'message' => 'Not Found'
             ],404);
@@ -124,15 +126,15 @@ class ClientController extends Controller
                     'message' => $validator->errors()
                 ], 400);
             }
-            $this->mediaDestroy($user->avatar);
+            $this->mediaDestroy($client->avatar);
         }
 
-        $data = $user->update([
+        $data = $client->update([
             'name'    => $request->name,
             'surname' => $request->surname,
             'age'     => $request->age,
             'about'   => $request->about,
-            'avatar'  => $this->uploadImage($request->file('avatar'), $user->logo),
+            'avatar'  => $this->uploadImage($request->file('avatar'), $client->logo),
             'email'   => $request->email,
             'password'=> $request->password,
         ]);
@@ -151,19 +153,19 @@ class ClientController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::find($id);
-        if (!$user)
+        $client = Client::find($id);
+        if (!$client)
             return response([
                 'message' => 'Not Found'
             ],404);
 
         //Unlink image
-        if ($user->avatar)
-            $this->mediaDestroy($user->avatar);
+        if ($client->avatar)
+            $this->mediaDestroy($client->avatar);
 
-        $user->delete();
+        $client->delete();
         return response([
-            'message' => 'User delete successfully','data' => null
+            'message' => 'Client delete successfully','data' => null
         ],200);
     }
 }

@@ -29,7 +29,7 @@ Route::group(['prefix'=>'admin','as'=>'admin.'], function(){
 
     Route::post('/login',  [AuthController::class, 'login'])->name('login');
 
-    Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::group(['middleware' => 'auth:sanctum'], function() {
         //Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
