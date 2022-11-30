@@ -17,7 +17,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $data = Client::fastPaginate(50);
+        $data = Client::select('id','name','surname','age','about','email')->fastPaginate(50);
 
         return response([
             "message" => "Clients data retrieved successfully",
@@ -27,7 +27,8 @@ class ClientController extends Controller
 
     public function companies($id)
     {
-        $data = Client::where('id',$id)->with('companies')->fastPaginate(50);
+        $data = Client::select('id','name','surname','age','about','email')
+            ->where('id',$id)->with('companies:id,name,about')->fastPaginate(50);
 
         return response([
             "message" => "Client companies data retrieved successfully",
