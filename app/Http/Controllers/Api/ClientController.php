@@ -43,15 +43,8 @@ class ClientController extends Controller
      */
     public function store(StoreClientRequest $request)
     {
-        $client = new Client();
-        $client->name     = $request->name;
-        $client->surname  = $request->surname;
-        $client->age      = $request->age;
-        $client->about    = $request->about;
+        $client = Client::create($request->all());
         $client->addMediaFromRequest('avatar')->toMediaCollection('images');
-        $client->email    = $request->email;
-        $client->password = $request->password;
-        $client->save();
 
         return response([
             "message" => "Client Store successfully",
@@ -88,22 +81,14 @@ class ClientController extends Controller
                 'message' => 'Not Found'
             ],404);
 
-        //Unlink old image
         if ($request->file('avatar'))
             $client->addMediaFromRequest('avatar')->toMediaCollection('images');
 
-        $data = $client->update([
-            'name'    => $request->name,
-            'surname' => $request->surname,
-            'age'     => $request->age,
-            'about'   => $request->about,
-            'email'   => $request->email,
-            'password'=> $request->password,
-        ]);
+        $client->update($request->all());
 
         return response([
             "message" => "Client Update successfully",
-            'data' => null
+            'data'    => null
         ],200);
     }
 

@@ -43,11 +43,8 @@ class CompanyController extends Controller
      */
     public function store(StoreCompanyRequest $request)
     {
-        $company = new Company();
-        $company->name  = $request->name;
-        $company->about = $request->about;
+        $company = Company::create($request->all());
         $company->addMediaFromRequest('logo')->toMediaCollection('images');
-        $company->save();
 
         return response([
             "message" => "Company Store successfully",
@@ -84,14 +81,10 @@ class CompanyController extends Controller
                 'message' => 'Not Found'
             ],404);
 
-        //Unlink old image
         if ($request->file('logo'))
             $company->addMediaFromRequest('logo')->toMediaCollection('images');
 
-        $data = $company->update([
-            'name'  => $request->name,
-            'about' => $request->about,
-        ]);
+        $company->update($request->all());
 
         return response([
             "message" => "Company Update successfully",
