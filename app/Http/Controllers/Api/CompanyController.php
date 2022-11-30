@@ -64,15 +64,8 @@ class CompanyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Company $company)
     {
-        $company = Company::where('id', $id)->with('users')->first();
-
-        if (!$company)
-            return response([
-                "message"=>'Not found' , 'data' => null
-            ],404);
-
         return response([
             "message" => "Company data retrieved successfully",
             "data"    => $company

@@ -68,15 +68,8 @@ class ClientController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Client $client)
     {
-        $client = Client::where('id', $id)->with('companies')->first();
-
-        if (!$client)
-            return response([
-                "message"=>'Not found' , 'data' => null]
-                ,404);
-
         return response([
             "message" => "Client data retrieved successfully",
             "data"    => $client

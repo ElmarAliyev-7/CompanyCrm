@@ -36,7 +36,11 @@ Route::group(['prefix'=>'admin','as'=>'admin.'], function(){
         //Company
         Route::get('/companies',            [CompanyController::class,'index']);
         Route::get('/company-clients/{id}', [CompanyController::class,'clients']);
-        Route::get('/company/{id}',         [CompanyController::class,'show']);
+        Route::get('/companies/{company}',  [CompanyController::class,'show'])->missing(function (){
+            return response([
+                    "message"=>'Not found' , 'data' => null]
+                ,404);
+        });
         Route::post('/company',             [CompanyController::class,'store']);
         Route::post('/company/{id}/update', [CompanyController::class,'update']);
         Route::delete('/company/{id}',      [CompanyController::class,'destroy']);
@@ -44,7 +48,11 @@ Route::group(['prefix'=>'admin','as'=>'admin.'], function(){
         //Client
         Route::get('/clients',               [ClientController::class,'index']);
         Route::get('/client-companies/{id}', [ClientController::class,'companies']);
-        Route::get('/client/{id}',           [ClientController::class,'show']);
+        Route::get('/clients/{client}',      [ClientController::class,'show'])->missing(function (){
+            return response([
+                    "message"=>'Not found' , 'data' => null]
+                ,404);
+        });
         Route::post('/client',               [ClientController::class,'store']);
         Route::post('/client/{id}/update',   [ClientController::class,'update']);
         Route::delete('/client/{id}',        [ClientController::class,'destroy']);
