@@ -17,7 +17,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $data = Company::paginate(50);
+        $data = Company::fastPaginate(50);
 
         return response([
             "message" => "Companies data retrieved successfully",
@@ -27,7 +27,7 @@ class CompanyController extends Controller
 
     public function clients($id)
     {
-        $data = Company::where('id',$id)->with('users')->paginate(50);
+        $data = Company::where('id',$id)->with('users')->fastPaginate(50);
 
         return response([
             "message" => "Companies clients data retrieved successfully",

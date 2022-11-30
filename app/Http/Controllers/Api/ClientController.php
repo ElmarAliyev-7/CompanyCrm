@@ -17,7 +17,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $data = Client::paginate(50);
+        $data = Client::fastPaginate(50);
 
         return response([
             "message" => "Clients data retrieved successfully",
@@ -27,7 +27,7 @@ class ClientController extends Controller
 
     public function companies($id)
     {
-        $data = Client::where('id',$id)->with('companies')->paginate(50);
+        $data = Client::where('id',$id)->with('companies')->fastPaginate(50);
 
         return response([
             "message" => "Client companies data retrieved successfully",
@@ -43,8 +43,6 @@ class ClientController extends Controller
      */
     public function store(StoreClientRequest $request)
     {
-        $pathToFile = storage_path('app/public/clients/');
-
         $client = new Client();
         $client->name     = $request->name;
         $client->surname  = $request->surname;
