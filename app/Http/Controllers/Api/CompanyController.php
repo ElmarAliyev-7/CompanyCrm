@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreCompanyRequest;
+use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\MediaTrait;
 
 class CompanyController extends Controller
@@ -43,21 +44,8 @@ class CompanyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCompanyRequest $request)
     {
-        $validator = Validator::make($request->all() , [
-            'name'  => 'required',
-            'about' => 'nullable',
-            'logo' =>  'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        if($validator->fails()){
-            return response([
-                'error' => true,
-                'message' => $validator->errors()
-            ], 400);
-        }
-
         $company = new Company();
         $company->name  = $request->name;
         $company->about = $request->about;
@@ -98,7 +86,7 @@ class CompanyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCompanyRequest $request, $id)
     {
         $company = Company::find($id);
         if (!$company)
@@ -107,19 +95,8 @@ class CompanyController extends Controller
             ],404);
 
         //Unlink old image
-        if ($request->file('logo')){
-            $validator = Validator::make($request->all() , [
-                'logo'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
-
-            if($validator->fails()){
-                return response([
-                    'error' => true,
-                    'message' => $validator->errors()
-                ], 400);
-            }
+        if ($request->file('logo'))
             $this->mediaDestroy($company->logo);
-        }
 
         $data = $company->update([
             'name'  => $request->name,

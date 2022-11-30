@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Http\Traits\MediaTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\UpdateClientRequest;
 
 class ClientController extends Controller
 {
@@ -43,25 +44,8 @@ class ClientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreClientRequest $request)
     {
-        $validator = Validator::make($request->all() , [
-            'name'     => 'required',
-            'surname'  => 'nullable',
-            'age'      => 'nullable|integer',
-            'about'    => 'nullable',
-            'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'email'    => 'email|required',
-            'password' => 'required',
-        ]);
-
-        if($validator->fails()){
-            return response([
-                'error' => true,
-                'message' => $validator->errors()
-            ], 400);
-        }
-
         $client = new Client();
         $client->name     = $request->name;
         $client->surname  = $request->surname;
@@ -106,7 +90,7 @@ class ClientController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateClientRequest $request, $id)
     {
         $client = Client::find($id);
         if (!$client)
@@ -115,19 +99,8 @@ class ClientController extends Controller
             ],404);
 
         //Unlink old image
-        if ($request->file('avatar')){
-            $validator = Validator::make($request->all() , [
-                'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
-
-            if($validator->fails()){
-                return response([
-                    'error' => true,
-                    'message' => $validator->errors()
-                ], 400);
-            }
+        if ($request->file('avatar'))
             $this->mediaDestroy($client->avatar);
-        }
 
         $data = $client->update([
             'name'    => $request->name,
