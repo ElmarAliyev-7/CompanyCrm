@@ -12,7 +12,6 @@ class Company extends Model
     protected $fillable = [
         'name',
         'about',
-        'logo',
     ];
 
     public function clients()

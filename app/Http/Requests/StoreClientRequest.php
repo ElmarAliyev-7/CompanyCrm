@@ -29,7 +29,7 @@ class StoreClientRequest extends FormRequest
             'age'      => 'nullable|integer',
             'about'    => 'nullable',
             'avatar'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'email'    => 'email|required',
+            'email'    => 'email|required|unique:clients',
             'password' => 'required',
         ];
     }

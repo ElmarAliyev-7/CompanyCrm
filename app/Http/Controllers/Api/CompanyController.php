@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
-use App\Http\Traits\MediaTrait;
 
 class CompanyController extends Controller
 {
-    use MediaTrait;
 
     /**
      * Display a listing of the resource.
@@ -49,7 +46,7 @@ class CompanyController extends Controller
         $company = new Company();
         $company->name  = $request->name;
         $company->about = $request->about;
-        $company->logo  = $this->uploadImage($request->file('logo'));
+        $company->addMediaFromRequest('logo')->toMediaCollection('images');
         $company->save();
 
         return response([
@@ -89,12 +86,11 @@ class CompanyController extends Controller
 
         //Unlink old image
         if ($request->file('logo'))
-            $this->mediaDestroy($company->logo);
+            $company->addMediaFromRequest('logo')->toMediaCollection('images');
 
         $data = $company->update([
             'name'  => $request->name,
             'about' => $request->about,
-            'logo'  => $this->uploadImage($request->file('logo'), $company->logo)
         ]);
 
         return response([
@@ -116,10 +112,6 @@ class CompanyController extends Controller
             return response([
                 'message' => 'Not Found'
             ],404);
-
-        //Unlink image
-        if ($company->logo)
-            $this->mediaDestroy($company->logo);
 
         $company->delete();
         return response([

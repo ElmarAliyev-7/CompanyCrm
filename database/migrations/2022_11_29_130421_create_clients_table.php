@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('surname')->nullable();
             $table->smallInteger('age')->nullable();
             $table->longText('about')->nullable();
-            $table->string('avatar')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

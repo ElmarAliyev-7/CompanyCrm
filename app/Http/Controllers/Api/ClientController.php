@@ -4,14 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
-use App\Http\Traits\MediaTrait;
-use Illuminate\Http\Request;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 
 class ClientController extends Controller
 {
-    use MediaTrait;
 
     /**
      * Display a listing of the resource.
@@ -46,12 +43,14 @@ class ClientController extends Controller
      */
     public function store(StoreClientRequest $request)
     {
+        $pathToFile = storage_path('app/public/clients/');
+
         $client = new Client();
         $client->name     = $request->name;
         $client->surname  = $request->surname;
         $client->age      = $request->age;
         $client->about    = $request->about;
-        $client->avatar   = $this->uploadImage($request->file('avatar'));
+        $client->addMediaFromRequest('avatar')->toMediaCollection('images');
         $client->email    = $request->email;
         $client->password = $request->password;
         $client->save();
@@ -93,14 +92,13 @@ class ClientController extends Controller
 
         //Unlink old image
         if ($request->file('avatar'))
-            $this->mediaDestroy($client->avatar);
+            $client->addMediaFromRequest('avatar')->toMediaCollection('images');
 
         $data = $client->update([
             'name'    => $request->name,
             'surname' => $request->surname,
             'age'     => $request->age,
             'about'   => $request->about,
-            'avatar'  => $this->uploadImage($request->file('avatar'), $client->logo),
             'email'   => $request->email,
             'password'=> $request->password,
         ]);
@@ -124,10 +122,6 @@ class ClientController extends Controller
             return response([
                 'message' => 'Not Found'
             ],404);
-
-        //Unlink image
-        if ($client->avatar)
-            $this->mediaDestroy($client->avatar);
 
         $client->delete();
         return response([
